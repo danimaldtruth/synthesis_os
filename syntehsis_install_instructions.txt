@@ -1,0 +1,80 @@
+This is it. You have the master script, and you are staring at the Arch Linux root prompt on your Live USB.
+
+Here is the exact, step-by-step sequence to prep your ThinkPad and pull the trigger on the Synthesis OS installation.
+
+Step 1: Connect to Wi-Fi
+Arch Linux requires an active connection to download your packages.
+
+Type iwctl and hit Enter.
+
+Type station wlan0 scan and hit Enter.
+
+Type station wlan0 get-networks to see your local Wi-Fi.
+
+Type station wlan0 connect "Your Network Name" (use quotes if there are spaces in the name). Enter your password.
+
+Type exit to return to the main prompt.
+
+Type ping -c 3 google.com just to verify you have a pulse.
+
+Step 2: Partition the Drive (The Most Important Step)
+The script needs to know where to install the bootloader and the operating system. Since you are on a ThinkPad T14, your main hard drive is almost certainly an NVMe drive (usually called /dev/nvme0n1).
+
+Type lsblk to confirm the name of your main drive.
+
+Type cfdisk /dev/nvme0n1 (replace with your drive name if it's different).
+
+If it asks for a label type, select gpt.
+
+Create the Boot Partition:
+
+Highlight Free Space, hit New.
+
+Type 1G (for 1 Gigabyte) and hit Enter.
+
+Go to Type and change it to EFI System.
+
+Create the Root Partition:
+
+Highlight the remaining Free Space, hit New.
+
+Leave the size as the default (this uses the rest of your drive) and hit Enter.
+
+The Type will default to Linux filesystem, which is exactly what you want.
+
+Save and Exit:
+
+Navigate to Write, type yes, and hit Enter.
+
+Navigate to Quit and hit Enter.
+
+Type lsblk one more time. You should now see /dev/nvme0n1p1 (your boot partition) and /dev/nvme0n1p2 (your root partition). Keep those numbers in your head.
+
+Step 3: Download the Master Script
+Before you do this, make sure you have copied the massive Python script we built into a GitHub Gist (or Pastebin), clicked the "Raw" button, and copied that direct URL.
+
+At the Arch terminal, type:
+curl -O [YOUR_RAW_GIST_URL_HERE]
+
+(Note: that is a capital "O", not a zero). This will instantly download the script directly into your Live USB memory.
+
+Step 4: Forge Synthesis OS
+Now, you just run the tool we built.
+
+python synthesis_install.py
+
+The custom ASCII banner will drop down, and the script will ask you for:
+
+Your Boot Partition (/dev/nvme0n1p1)
+
+Your Root Partition (/dev/nvme0n1p2)
+
+Your ThinkPad CPU (Intel or AMD)
+
+Your desired username and password
+
+Once you hit "yes," you can literally walk away and grab a coffee. The script will format the drives, bootstrap the Linux kernel, install the macOS-style Plasma Wayland desktop, configure your networking, compile the AUR packages, install all your VSTs, configure Docker and Whonix, set up your development folders, and inject the interactive tutorial for your first login.
+
+When it finishes, the screen will say "INSTALLATION COMPLETE".
+
+Type reboot, pull the USB drive out of the side of the ThinkPad, and watch Synthesis OS boot for the first time.
